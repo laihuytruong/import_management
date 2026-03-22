@@ -1,0 +1,15 @@
+@import './tokens.css';
+
+html,
+body,
+#app {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--app-bg);
+    color: var(--text-primary);
+}
+
+* {
+    box-sizing: border-box;
+}
