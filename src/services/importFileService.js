@@ -1,235 +1,128 @@
-import { IMPORT_STATUS } from '../constants/importStatus'
+import api from "@/service/axios";
+import { IMPORT_STATUS } from "../constants/importStatus";
 
-const MOCK_IMPORT_FILES = [
+const MOCK_IMPORTED_TASKS_DATA = {
+  data: [
     {
-        id: 1,
-        batchExecutable: true,
-        fileName: 'user_import_20250115.csv',
-        status: IMPORT_STATUS.REGISTERED,
-        organization: 'Organization A',
-        uploadTime: '2025/01/15 10:30',
-        uploaderName: 'Taro Tanaka',
-        completedTime: '2025/01/15 10:35',
+      TaskName: "t-588 KIT",
+      Description:
+        "Trong màn hình Tạo Guidance KIT, khi thực hiện sắp xếp tại danh sách đối tượng gửi theo 【退職日】, tất cả dữ liệu đều để trống nhưng mỗi lần click vào tiêu đề thì thứ tự lại thay đổi.",
+      TaskCode: "EMPOR07-747",
+      ProjectCode: "EMPOR07",
+      Project: "EMPOR07",
+      Assign: "ca24y",
+      StatusCode: "Status2",
+      TaskStatus: "New",
     },
     {
-        id: 2,
-        batchExecutable: true,
-        fileName: 'user_import_20250114.csv',
-        status: IMPORT_STATUS.UPLOADED,
-        organization: 'Organization B',
-        uploadTime: '2025/01/14 15:20',
-        uploaderName: 'Hanako Sato',
-        completedTime: '-',
+      TaskName: "t-589 KIT",
+      Description: "Test Description",
+      TaskCode: "EMPOR07-748",
+      ProjectCode: "EMPOR06",
+      Project: "EMPOR06",
+      Assign: "S0001595",
+      StatusCode: "Status5",
+      TaskStatus: "Completed",
     },
-    {
-        id: 3,
-        batchExecutable: false,
-        fileName: 'user_import_20250113.csv',
-        status: IMPORT_STATUS.FAILED,
-        organization: 'Organization C',
-        uploadTime: '2025/01/13 09:15',
-        uploaderName: 'Yuki Suzuki',
-        completedTime: '2025/01/13 09:18',
-    },
-    {
-        id: 4,
-        batchExecutable: true,
-        fileName: 'user_import_20250112.csv',
-        status: IMPORT_STATUS.REGISTERED,
-        organization: 'Organization A',
-        uploadTime: '2025/01/12 14:45',
-        uploaderName: 'Ken Yamada',
-        completedTime: '2025/01/12 14:50',
-    },
-    {
-        id: 5,
-        batchExecutable: false,
-        fileName: 'user_import_20250111.csv',
-        status: IMPORT_STATUS.UPLOADED,
-        organization: 'Organization B',
-        uploadTime: '2025/01/11 11:30',
-        uploaderName: 'Rina Takahashi',
-        completedTime: '-',
-    },
-    {
-        id: 6,
-        batchExecutable: false,
-        fileName: 'user_import_20250110.csv',
-        status: IMPORT_STATUS.REGISTERED,
-        organization: 'Organization C',
-        uploadTime: '2025/01/10 16:20',
-        uploaderName: 'Akiro Nakamura',
-        completedTime: '2025/01/10 16:25',
-    },
-    {
-        id: 7,
-        batchExecutable: false,
-        fileName: 'user_import_20250109.csv',
-        status: IMPORT_STATUS.REGISTERED,
-        organization: 'Organization A',
-        uploadTime: '2025/01/09 08:50',
-        uploaderName: 'Mika Kobayashi',
-        completedTime: '2025/01/09 08:55',
-    },
-    {
-        id: 8,
-        batchExecutable: false,
-        fileName: 'user_import_20250108.csv',
-        status: IMPORT_STATUS.FAILED,
-        organization: 'Organization B',
-        uploadTime: '2025/01/08 13:40',
-        uploaderName: 'Aoi Watanabe',
-        completedTime: '2025/01/08 13:42',
-    },
-    {
-        id: 9,
-        batchExecutable: false,
-        fileName: 'user_import_20250107.csv',
-        status: IMPORT_STATUS.REGISTERED,
-        organization: 'Organization C',
-        uploadTime: '2025/01/07 10:25',
-        uploaderName: 'Shota Ito',
-        completedTime: '2025/01/07 10:30',
-    },
-    {
-        id: 10,
-        batchExecutable: true,
-        fileName: 'user_import_20250106.csv',
-        status: IMPORT_STATUS.UPLOADED,
-        organization: 'Organization A',
-        uploadTime: '2025/01/06 15:10',
-        uploaderName: 'Nao Yagi',
-        completedTime: '-',
-    },
-]
+  ],
+};
 
-const MOCK_IMPORTED_ROWS_BY_FILE_ID = {
-    1: [
-        {
-            rowNo: 1,
-            userId: 'U1001',
-            fullName: 'Taro Tanaka',
-            email: 'taro@example.com',
-            role: 'Admin',
-        },
-        {
-            rowNo: 2,
-            userId: 'U1002',
-            fullName: 'Hanako Sato',
-            email: 'hanako@example.com',
-            role: 'Operator',
-        },
-        {
-            rowNo: 3,
-            userId: 'U1003',
-            fullName: 'Ken Yamada',
-            email: 'ken@example.com',
-            role: 'Viewer',
-        },
-    ],
-    2: [
-        {
-            rowNo: 1,
-            userId: 'U1201',
-            fullName: 'Rina Takahashi',
-            email: 'rina@example.com',
-            role: 'Operator',
-        },
-        {
-            rowNo: 2,
-            userId: 'U1202',
-            fullName: 'Aoi Watanabe',
-            email: 'aoi@example.com',
-            role: 'Viewer',
-        },
-    ],
-    10: [
-        {
-            rowNo: 1,
-            userId: 'U1401',
-            fullName: 'Nao Yagi',
-            email: 'nao@example.com',
-            role: 'Admin',
-        },
-        {
-            rowNo: 2,
-            userId: 'U1402',
-            fullName: 'Shota Ito',
-            email: 'shota@example.com',
-            role: 'Operator',
-        },
-        {
-            rowNo: 3,
-            userId: 'U1403',
-            fullName: 'Mika Kobayashi',
-            email: 'mika@example.com',
-            role: 'Viewer',
-        },
-        {
-            rowNo: 4,
-            userId: 'U1404',
-            fullName: 'Yuki Suzuki',
-            email: 'yuki@example.com',
-            role: 'Operator',
-        },
-    ],
+function pushCondition(conditions, id, value, operator = "eq") {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  conditions.push({ id, value, operator });
 }
 
-function isDateInRange(target, from, to) {
-    if (!from && !to) {
-        return true
-    }
+export function buildImportTaskListParams({
+  filters = {},
+  pagination = {},
+  sorter = null,
+  sort_fields,
+} = {}) {
+  const conditions = [];
 
-    const targetTime = new Date(target.replace(/\//g, '-')).getTime()
-    const fromTime = from ? new Date(from).setHours(0, 0, 0, 0) : null
-    const toTime = to ? new Date(to).setHours(23, 59, 59, 999) : null
+  if (filters.status && filters.status !== "all") {
+    pushCondition(conditions, "status", filters.status);
+  }
 
-    if (fromTime && targetTime < fromTime) {
-        return false
-    }
-    if (toTime && targetTime > toTime) {
-        return false
-    }
-    return true
+  pushCondition(conditions, "upload_time", filters.uploadDateFrom, "gte");
+  pushCondition(conditions, "upload_time", filters.uploadDateTo, "lte");
+  pushCondition(
+    conditions,
+    "completed_time",
+    filters.batchExecutionDateFrom,
+    "gte"
+  );
+  pushCondition(
+    conditions,
+    "completed_time",
+    filters.batchExecutionDateTo,
+    "lte"
+  );
+
+  const body = {
+    per_page: Number(pagination.pageSize) || 5,
+    page: Number(pagination.current) || 1,
+    use_or_condition: false,
+    conditions,
+  };
+
+  if (sort_fields && Array.isArray(sort_fields) && sort_fields.length > 0) {
+    body.sort_fields = sort_fields;
+  } else if (sorter && sorter.field && sorter.order) {
+    body.sort_field_id = sorter.field;
+    body.sort_order = sorter.order;
+  }
+
+  return body;
 }
 
-export function fetchImportFiles(filters) {
-    const {
-        status,
-        organization,
-        uploadDateFrom,
-        uploadDateTo,
-        batchExecutionDateFrom,
-        batchExecutionDateTo,
-    } = filters
+export async function fetchImportFiles(body = {}) {
+  const response = await api.post("/import-task-management", body);
+  const rawItems = response?.items || response?.data || [];
 
-    const filtered = MOCK_IMPORT_FILES.filter((item) => {
-        const statusMatched = status === 'all' || item.status === status
-        const organizationMatched =
-            organization === 'all' || item.organization === organization
-        const uploadMatched = isDateInRange(
-            item.uploadTime,
-            uploadDateFrom,
-            uploadDateTo,
-        )
-        const executionMatched = isDateInRange(
-            item.completedTime === '-' ? item.uploadTime : item.completedTime,
-            batchExecutionDateFrom,
-            batchExecutionDateTo,
-        )
+  const items = rawItems.map((item) => ({
+    id: item.ImportID,
+    fileName: item.DataFileName || "-",
+    status: normalizeImportStatus(item.StatusImport),
+    rawStatus: item.StatusImport,
+    uploadTime: item.UploadDate || "-",
+    uploaderName: item.UploadUser || "-",
+    completedTime: item.BatchCompleteDate || "-",
+    batchExecutable:
+      item.batchExecutable !== undefined
+        ? Boolean(item.batchExecutable)
+        : normalizeImportStatus(item.Status) === IMPORT_STATUS.UPLOADED,
+    totalTaskImport: item.TotalTaskImport,
+    source: item,
+  }));
 
-        return (
-            statusMatched &&
-            organizationMatched &&
-            uploadMatched &&
-            executionMatched
-        )
-    })
-
-    return Promise.resolve(filtered)
+  return {
+    ...response,
+    items,
+    totalItems: Number(response?.totalItems ?? response?.total ?? items.length),
+  };
 }
 
-export function fetchImportedCsvData(fileId) {
-    const numericId = Number(fileId)
-    return Promise.resolve(MOCK_IMPORTED_ROWS_BY_FILE_ID[numericId] || [])
+function normalizeImportStatus(status) {
+  if (!status) return IMPORT_STATUS.UPLOADED;
+
+  const value = String(status).toLowerCase();
+  const map = {
+    registered: IMPORT_STATUS.REGISTERED,
+    uploaded: IMPORT_STATUS.UPLOADED,
+    failed: IMPORT_STATUS.FAILED,
+    processing: IMPORT_STATUS.PROCESSING,
+    status1: IMPORT_STATUS.UPLOADED,
+    status2: IMPORT_STATUS.REGISTERED,
+    status3: IMPORT_STATUS.FAILED,
+    status4: IMPORT_STATUS.PROCESSING,
+  };
+
+  return map[value] || IMPORT_STATUS.UPLOADED;
+}
+
+export function fetchImportedCsvData() {
+  return Promise.resolve(MOCK_IMPORTED_TASKS_DATA);
 }
